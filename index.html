@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🎉 Happy Birthday!</title>
+  <meta name="description" content="A cheerful, mobile‑friendly birthday card with confetti and a share button." />
+  <meta property="og:title" content="🎉 Happy Birthday!" />
+  <meta property="og:description" content="Tap to open your birthday surprise." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://dummyimage.com/1200x630/ffd1e8/333&text=Happy+Birthday!" />
+  <meta name="theme-color" content="#ff6ad5" />
+  <style>
+    :root{
+      --bg1:#ffecd2; /* light */
+      --bg2:#fcb69f; /* peach */
+      --brand:#ff6ad5; /* pink */
+      --brand-2:#7c4dff; /* purple */
+      --ink:#222;
+      --muted:#555;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color:var(--ink);
+      background: linear-gradient(140deg, var(--bg1), var(--bg2));
+      display:flex;align-items:center;justify-content:center;
+      overflow-x:hidden;
+    }
+    .wrap{width:100%;max-width:720px;padding:24px}
+    .card{
+      background: rgba(255,255,255,.75);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,.6);
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.12);
+      padding: clamp(20px, 4vw, 36px);
+      text-align:center;
+      position:relative;
+    }
+    h1{
+      font-size: clamp(28px, 6vw, 48px);
+      line-height:1.1;
+      margin: 10px 0 6px;
+      letter-spacing:.5px;
+    }
+    .sub{color:var(--muted);margin:0 0 18px}
+    .badge{
+      display:inline-flex;gap:8px;align-items:center;justify-content:center;
+      padding:8px 12px;border-radius:999px;font-weight:600;font-size:14px;
+      background:linear-gradient(90deg,var(--brand),var(--brand-2));
+      color:#fff;box-shadow:0 6px 18px rgba(124,77,255,.25);
+    }
+    .content{font-size:clamp(16px, 2.5vw, 18px);line-height:1.6;margin:16px 0 28px}
+    .btns{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+    .btn{
+      appearance:none;border:0;cursor:pointer;user-select:none;
+      padding:12px 18px;border-radius:12px;font-weight:700;font-size:16px;
+      background:#111;color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:10px;
+      transition: transform .08s ease, box-shadow .2s ease;
+      box-shadow: 0 10px 20px rgba(0,0,0,.15);
+    }
+    .btn:hover{transform: translateY(-1px)}
+    .btn.secondary{background:#fff;color:#111;border:1px solid #ddd}
+    .footer{margin-top:20px;color:#666;font-size:13px}
+    .confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:0}
+    .card{z-index:1}
+    .emoji{font-size:clamp(24px,6vw,44px)}
+    .divider{height:1px;background:linear-gradient(90deg,transparent,rgba(0,0,0,.08),transparent);margin:20px 0}
+    .field{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:6px 0 16px}
+    .input{
+      padding:10px 12px;border-radius:10px;border:1px solid #ddd;min-width:200px;max-width:100%;
+      font-size:16px
+    }
+  </style>
+</head>
+<body>
+  <canvas class="confetti-canvas" id="confetti"></canvas>
+  <main class="wrap">
+    <section class="card">
+      <div class="badge" aria-hidden="true">🎉 Happy Birthday</div>
+      <h1 id="headline">Happy Birthday, Friend! 🎂</h1>
+      <p class="sub" id="dateLine"></p>
+      <p class="content" id="message">Wishing you a day filled with laughter, cake, and all your favorite people. May the year ahead be your happiest yet! 💖</p>
+
+      <div class="field">
+        <input id="nameInput" class="input" placeholder="Add a name…" />
+        <button class="btn secondary" id="updateBtn">Personalize</button>
+      </div>
+
+      <div class="btns">
+        <a id="giftBtn" class="btn" href="#" target="_blank" rel="noopener">🎁 Open your surprise</a>
+        <button id="shareBtn" class="btn secondary">📤 Share</button>
+      </div>
+
+      <div class="divider"></div>
+      <p class="footer">Tip: You can personalize this page with URL parameters. Try
+        <code>?name=Shahd&msg=Have%20an%20amazing%20day!&gift=https://example.com</code>
+      </p>
+    </section>
+  </main>
+
+  <script>
+    // --- Utility: read URL params
+    const params = new URLSearchParams(location.search);
+    const nameParam = params.get('name') || 'Friend';
+    const msgParam = params.get('msg');
+    const giftParam = params.get('gift') || '#';
+    const dateParam = params.get('date'); // optional, e.g. 2025-08-21
+
+    // Set initial content
+    const headline = document.getElementById('headline');
+    const message = document.getElementById('message');
+    const dateLine = document.getElementById('dateLine');
+    const giftBtn = document.getElementById('giftBtn');
+
+    headline.textContent = `Happy Birthday, ${nameParam}! 🎂`;
+    if (msgParam) message.textContent = decodeURIComponent(msgParam);
+    giftBtn.href = giftParam;
+
+    if (dateParam) {
+      const d = new Date(dateParam);
+      if (!isNaN(d)) {
+        dateLine.textContent = d.toLocaleDateString(undefined, { weekday:'long', year:'numeric', month:'long', day:'numeric'});
+      }
+    }
+
+    // Personalize inline without editing URL
+    document.getElementById('nameInput').value = nameParam;
+    document.getElementById('updateBtn').addEventListener('click', () => {
+      const v = document.getElementById('nameInput').value.trim() || 'Friend';
+      headline.textContent = `Happy Birthday, ${v}! 🎂`;
+      // Update URL (no reload)
+      const p = new URLSearchParams(location.search);
+      p.set('name', v);
+      history.replaceState(null, '', `${location.pathname}?${p.toString()}`);
+      confettiBurst();
+    });
+
+    // Share (Web Share API fallback)
+    document.getElementById('shareBtn').addEventListener('click', async () => {
+      const shareData = {
+        title: 'Happy Birthday! 🎉',
+        text: `A birthday card for ${nameParam}`,
+        url: location.href,
+      };
+      if (navigator.share) {
+        try { await navigator.share(shareData); } catch {}
+      } else {
+        try {
+          await navigator.clipboard.writeText(location.href);
+          alert('Link copied to clipboard!');
+        } catch { alert('Copy this link: ' + location.href); }
+      }
+    });
+
+    // --- Simple confetti animation (no libraries)
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+    let W, H, confetti;
+
+    function resize(){
+      W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize); resize();
+
+    function makeConfetti(count = 150){
+      const colors = ['#ff6ad5','#ffd166','#06d6a0','#118ab2','#ef476f','#7c4dff'];
+      return Array.from({length: count}, () => ({
+        x: Math.random()*W,
+        y: Math.random()*-H,
+        w: 6+Math.random()*6,
+        h: 8+Math.random()*10,
+        col: colors[(Math.random()*colors.length)|0],
+        velY: 2+Math.random()*3,
+        velX: -1+Math.random()*2,
+        rot: Math.random()*Math.PI,
+        rotSpeed: -0.1+Math.random()*0.2,
+      }));
+    }
+
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      confetti.forEach(p=>{
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = p.col;
+        ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+        ctx.restore();
+        p.y += p.velY; p.x += p.velX; p.rot += p.rotSpeed;
+        if (p.y>H+20) { p.y = -20; p.x = Math.random()*W; }
+      });
+      requestAnimationFrame(draw);
+    }
+
+    function confettiBurst(){
+      confetti = makeConfetti(180);
+      // brief intensified burst
+      setTimeout(()=>{ confetti = makeConfetti(120); }, 1200);
+    }
+
+    confetti = makeConfetti(120);
+    draw();
+  </script>
+</body>
+</html>
