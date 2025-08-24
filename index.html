@@ -12,10 +12,10 @@
   <meta name="theme-color" content="#ff6ad5" />
   <style>
     :root{
-      --bg1:#ffecd2; /* light */
-      --bg2:#fcb69f; /* peach */
-      --brand:#ff6ad5; /* pink */
-      --brand-2:#7c4dff; /* purple */
+      --bg1:#ffecd2;
+      --bg2:#fcb69f;
+      --brand:#ff6ad5;
+      --brand-2:#7c4dff;
       --ink:#222;
       --muted:#555;
     }
@@ -55,276 +55,141 @@
     }
     .content{font-size:clamp(16px, 2.5vw, 18px);line-height:1.6;margin:16px 0 28px}
     .btns{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
-    .btn{
-      appearance:none;border:0;cursor:pointer;user-select:none;
-      padding:12px 18px;border-radius:12px;font-weight:700;font-size:16px;
-      background:#111;color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:10px;
-      transition: transform .08s ease, box-shadow .2s ease;
-      box-shadow: 0 10px 20px rgba(0,0,0,.15);
+
+    /* 🎁 Better looking button */
+    #openBtn{
+      background: linear-gradient(90deg, var(--brand), var(--brand-2));
+      color:#fff;border:0;cursor:pointer;user-select:none;
+      padding:14px 28px;border-radius:50px;font-weight:800;font-size:18px;
+      display:inline-flex;align-items:center;gap:10px;
+      transition: transform .12s ease, box-shadow .2s ease, filter .2s ease;
+      box-shadow: 0 10px 22px rgba(124,77,255,.35);
     }
-    .btn:hover{transform: translateY(-1px)}
-    .btn.secondary{background:#fff;color:#111;border:1px solid #ddd}
+    #openBtn:hover{transform: translateY(-2px) scale(1.02); box-shadow:0 14px 28px rgba(124,77,255,.45)}
+
     .footer{margin-top:20px;color:#666;font-size:13px}
     .confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:0}
     .card{z-index:1}
-    .emoji{font-size:clamp(24px,6vw,44px)}
-    .divider{height:1px;background:linear-gradient(90deg,transparent,rgba(0,0,0,.08),transparent);margin:20px 0}
-    .field{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:6px 0 16px}
-    .input{
-      padding:10px 12px;border-radius:10px;border:1px solid #ddd;min-width:200px;max-width:100%;
-      font-size:16px
+
+    /* 🌟 Modal background */
+    .modal{
+      display:none; /* keep hidden by default */
+      position:fixed;inset:0;z-index:1000;
+      background:rgba(0,0,0,.7);
+      justify-content:center;align-items:center; /* will apply when display becomes flex */
+      padding:20px;
     }
-    /* Modal background */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1000;
-  left: 0; top: 0;
-  width: 100%; height: 100%;
-  background-color: rgba(0,0,0,0.7);
-}
 
-/* Modal content box */
-.modal-content {
-  position: relative;
-  margin: 10% auto;
-  padding: 20px;
-  background: #fff;
-  border-radius: 10px;
-  width: 80%;
-  max-width: 600px;
-  text-align: center;
-}
+    /* 🎨 Modal content */
+    .modal-content{
+      position:relative;
+      background:#fff;
+      border-radius:16px;
+      width:90%;
+      max-width:760px; /* a bit bigger */
+      text-align:center;
+      padding:30px 20px 36px;
+      box-shadow:0 15px 40px rgba(0,0,0,.25);
+      animation: fadeIn .28s ease;
+    }
+    @keyframes fadeIn{from{opacity:0;transform:scale(.94)} to{opacity:1;transform:scale(1)}}
 
-/* Close button */
-.close {
-  position: absolute;
-  top: 10px; right: 20px;
-  font-size: 28px;
-  font-weight: bold;
-  cursor: pointer;
-}
+    .close{position:absolute;top:14px;right:18px;font-size:32px;font-weight:800;color:#555;cursor:pointer}
 
-/* Slider images */
-.slider img {
-  width: 100%;
-  max-height: 300px;
-  object-fit: contain;
-  border-radius: 10px;
-}
+    .slider img{width:100%;max-height:420px;object-fit:contain;border-radius:12px}
+    .slide{display:none}
+    .slide.active{display:block}
 
-.slide { display: none; }
-.slide.active { display: block; }
-
-/* Navigation arrows */
-.prev, .next {
-  cursor: pointer;
-  position: absolute;
-  top: 50%;
-  padding: 16px;
-  margin-top: -22px;
-  color: black;
-  font-weight: bold;
-  font-size: 24px;
-  user-select: none;
-}
-
-.prev { left: 0; }
-.next { right: 0; }
-
+    .prev,.next{
+      cursor:pointer;position:absolute;top:50%;transform:translateY(-50%);
+      padding:10px 14px;color:#333;font-weight:900;font-size:28px;user-select:none;
+      background:rgba(255,255,255,.85);border-radius:12px;box-shadow:0 6px 16px rgba(0,0,0,.15);
+    }
+    .prev{left:10px}
+    .next{right:10px}
   </style>
 </head>
 <body>
   <canvas class="confetti-canvas" id="confetti"></canvas>
   <main class="wrap">
     <section class="card">
-      <div class="badge" aria-hidden="true">🎉 Happy Birthday</div>
-      <h1 id="headline">Happy Birthday Babe🎂</h1>
+      <h1 id="headline">Happy Birthday🎂</h1>
       <p class="sub" id="dateLine"></p>
       <p class="content" id="message">Perks of dating a cs girlie 😉</p>
 
- 
       <div class="btns">
-        <button id="openBtn">Open for surprise🎁</button>
-
+        <button id="openBtn">Open for a note🎁</button>
       </div>
+
       <!-- Popup Modal -->
-<div id="giftModal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    
-    <!-- Image slider -->
-    <div class="slider">
-      <div class="slide active">
-        <img src="shoes.jpg" alt="Gift 1">
-        <p>So I can be with you while doing your fav thing ❤️</p>
-      </div>
-      <div class="slide">
-        <img src="gift2.jpg" alt="Gift 2">
-        <p>This one is second 🎁</p>
-      </div>
-    </div>
-    
-    <!-- Navigation arrows -->
-    <a class="prev">&#10094;</a>
-    <a class="next">&#10095;</a>
-  </div>
-</div>
+      <div id="giftModal" class="modal">
+        <div class="modal-content">
+          <span class="close" aria-label="Close">&times;</span>
 
+          <div class="slider" aria-live="polite">
+            <div class="slide active">
+              <img src="shoes.jpg" alt="Gift 1: Shoes">
+              <p>So</p>
+            </div>
+            <div class="slide">
+              <img src="gift2.jpg" alt="Gift 2">
+              <p></p>
+            </div>
+          </div>
+
+          <a class="prev" role="button" aria-label="Previous">&#10094;</a>
+          <a class="next" role="button" aria-label="Next">&#10095;</a>
+        </div>
+      </div>
 
       <div class="divider"></div>
-    
     </section>
   </main>
 
   <script>
-    // --- Utility: read URL params
+    // --- URL params (optional): ?msg=Your%20message&date=2025-08-21
     const params = new URLSearchParams(location.search);
     const msgParam = params.get('msg');
-    const giftParam = params.get('gift') || '#';
-    const dateParam = params.get('date'); // optional, e.g. 2025-08-21
-
-    // Set initial content
-    const headline = document.getElementById('headline');
+    const dateParam = params.get('date');
     const message = document.getElementById('message');
     const dateLine = document.getElementById('dateLine');
-    const giftBtn = document.getElementById('giftBtn');
-
-    headline.textContent = `Happy Birthday, ${nameParam}! 🎂`;
     if (msgParam) message.textContent = decodeURIComponent(msgParam);
-    giftBtn.href = giftParam;
+    if (dateParam){ const d = new Date(dateParam); if(!isNaN(d)) dateLine.textContent = d.toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'}) }
 
-    if (dateParam) {
-      const d = new Date(dateParam);
-      if (!isNaN(d)) {
-        dateLine.textContent = d.toLocaleDateString(undefined, { weekday:'long', year:'numeric', month:'long', day:'numeric'});
-      }
-    }
-
-    // Personalize inline without editing URL
-    document.getElementById('nameInput').value = nameParam;
-    document.getElementById('updateBtn').addEventListener('click', () => {
-      headline.textContent = `Happy Birthday, ${v}! 🎂`;
-      // Update URL (no reload)
-      const p = new URLSearchParams(location.search);
-      p.set('name', v);
-      history.replaceState(null, '', `${location.pathname}?${p.toString()}`);
-      confettiBurst();
-    });
-
-    // Share (Web Share API fallback)
-    document.getElementById('shareBtn').addEventListener('click', async () => {
-      const shareData = {
-        title: 'Happy Birthday! 🎉',
-        text: `A birthday card for ${nameParam}`,
-        url: location.href,
-      };
-      if (navigator.share) {
-        try { await navigator.share(shareData); } catch {}
-      } else {
-        try {
-          await navigator.clipboard.writeText(location.href);
-          alert('Link copied to clipboard!');
-        } catch { alert('Copy this link: ' + location.href); }
-      }
-    });
-
-    // --- Simple confetti animation (no libraries)
+    // --- Confetti (unchanged)
     const canvas = document.getElementById('confetti');
     const ctx = canvas.getContext('2d');
-    let W, H, confetti;
-
-    function resize(){
-      W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight;
-    }
+    let W,H,confetti;
+    function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
     window.addEventListener('resize', resize); resize();
-
-    function makeConfetti(count = 150){
-      const colors = ['#ff6ad5','#ffd166','#06d6a0','#118ab2','#ef476f','#7c4dff'];
-      return Array.from({length: count}, () => ({
-        x: Math.random()*W,
-        y: Math.random()*-H,
-        w: 6+Math.random()*6,
-        h: 8+Math.random()*10,
-        col: colors[(Math.random()*colors.length)|0],
-        velY: 2+Math.random()*3,
-        velX: -1+Math.random()*2,
-        rot: Math.random()*Math.PI,
-        rotSpeed: -0.1+Math.random()*0.2,
-      }));
+    function makeConfetti(count=150){
+      const colors=['#ff6ad5','#ffd166','#06d6a0','#118ab2','#ef476f','#7c4dff'];
+      return Array.from({length:count},()=>({x:Math.random()*W,y:Math.random()*-H,w:6+Math.random()*6,h:8+Math.random()*10,col:colors[(Math.random()*colors.length)|0],velY:2+Math.random()*3,velX:-1+Math.random()*2,rot:Math.random()*Math.PI,rotSpeed:-0.1+Math.random()*0.2}));
     }
-
-    function draw(){
-      ctx.clearRect(0,0,W,H);
-      confetti.forEach(p=>{
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.rot);
-        ctx.fillStyle = p.col;
-        ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
-        ctx.restore();
-        p.y += p.velY; p.x += p.velX; p.rot += p.rotSpeed;
-        if (p.y>H+20) { p.y = -20; p.x = Math.random()*W; }
-      });
-      requestAnimationFrame(draw);
-    }
-
-    function confettiBurst(){
-      confetti = makeConfetti(180);
-      // brief intensified burst
-      setTimeout(()=>{ confetti = makeConfetti(120); }, 1200);
-    }
-
-    confetti = makeConfetti(120);
-    draw();
+    function draw(){ ctx.clearRect(0,0,W,H); confetti.forEach(p=>{ ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.fillStyle=p.col; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore(); p.y+=p.velY; p.x+=p.velX; p.rot+=p.rotSpeed; if(p.y>H+20){ p.y=-20; p.x=Math.random()*W; } }); requestAnimationFrame(draw); }
+    function confettiBurst(){ confetti = makeConfetti(180); setTimeout(()=>{ confetti = makeConfetti(120); }, 1200); }
+    confetti = makeConfetti(120); draw();
   </script>
+
   <script>
-  const modal = document.getElementById("giftModal");
-const btn = document.getElementById("openBtn");
-  const span = document.querySelector(".close");
-  const slides = document.querySelectorAll(".slide");
-  const prev = document.querySelector(".prev");
-  const next = document.querySelector(".next");
+    // --- Modal logic
+    const modal = document.getElementById('giftModal');
+    const btn = document.getElementById('openBtn');
+    const closeBtn = document.querySelector('.close');
+    const slides = document.querySelectorAll('.slide');
+    const prev = document.querySelector('.prev');
+    const next = document.querySelector('.next');
+    let currentSlide = 0;
 
-  let currentSlide = 0;
+    function showSlide(i){ slides.forEach((s,idx)=> s.classList.toggle('active', idx===i)); }
 
-  // Open modal
-  btn.onclick = function() {
-    modal.style.display = "block";
-    showSlide(currentSlide);
-  }
+    btn.addEventListener('click', ()=>{ modal.style.display='flex'; showSlide(currentSlide); });
+    closeBtn.addEventListener('click', ()=> modal.style.display='none');
+    window.addEventListener('click', (e)=>{ if(e.target===modal) modal.style.display='none'; });
+    window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') modal.style.display='none'; });
 
-  // Close modal
-  span.onclick = function() {
-    modal.style.display = "none";
-  }
-
-  // Close if clicked outside
-  window.onclick = function(event) {
-    if (event.target == modal) {
-      modal.style.display = "none";
-    }
-  }
-
-  // Show slide function
-  function showSlide(index) {
-    slides.forEach((s, i) => {
-      s.classList.remove("active");
-      if (i === index) s.classList.add("active");
-    });
-  }
-
-  // Next/Prev
-  next.onclick = function() {
-    currentSlide = (currentSlide + 1) % slides.length;
-    showSlide(currentSlide);
-  }
-
-  prev.onclick = function() {
-    currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-    showSlide(currentSlide);
-  }
-</script>
-
+    next.addEventListener('click', ()=>{ currentSlide=(currentSlide+1)%slides.length; showSlide(currentSlide); });
+    prev.addEventListener('click', ()=>{ currentSlide=(currentSlide-1+slides.length)%slides.length; showSlide(currentSlide); });
+  </script>
 </body>
 </html>
